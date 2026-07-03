@@ -36,6 +36,17 @@ type Options struct {
 	ClaudeDir string // Claude Code config dir, e.g. ~/.claude
 }
 
+// DefaultClaudeDir returns ~/.claude, the standard Claude Code config
+// directory. Shared by the CLI flags and the TUI so both default to
+// the same place.
+func DefaultClaudeDir() string {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return ".claude"
+	}
+	return filepath.Join(home, ".claude")
+}
+
 // Result reports what Install wrote.
 type Result struct {
 	Agents []string // absolute paths of the agent files written

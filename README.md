@@ -28,6 +28,8 @@ QA** sin ruido.
 ```bash
 git clone https://github.com/FacundoPasqua/Qason.git
 cd Qason
+go run ./cmd/qason        # wizard interactivo (con medialuna 🥐)
+# o directo, sin wizard:
 go run ./cmd/qason install
 ```
 

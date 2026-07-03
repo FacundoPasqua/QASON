@@ -7,22 +7,26 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/FacundoPasqua/qason/internal/installer"
+	"github.com/FacundoPasqua/qason/internal/tui"
 )
 
 const version = "0.1.0"
 
 func main() {
 	if len(os.Args) < 2 {
-		usage()
-		os.Exit(2)
+		// No sub-command: launch the interactive wizard.
+		if err := tui.Run(); err != nil {
+			fmt.Fprintf(os.Stderr, "qason: %v\n", err)
+			os.Exit(1)
+		}
+		return
 	}
 
 	cmd := os.Args[1]
 	flags := flag.NewFlagSet(cmd, flag.ExitOnError)
-	claudeDir := flags.String("claude-dir", defaultClaudeDir(), "Claude Code config directory")
+	claudeDir := flags.String("claude-dir", installer.DefaultClaudeDir(), "Claude Code config directory")
 	_ = flags.Parse(os.Args[2:])
 
 	switch cmd {
@@ -52,18 +56,11 @@ func main() {
 	}
 }
 
-func defaultClaudeDir() string {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return ".claude"
-	}
-	return filepath.Join(home, ".claude")
-}
-
 func usage() {
 	fmt.Println(`qason — educational QA agents for Claude Code (the QATES teaching edition)
 
 Usage:
+  qason             launch the interactive install wizard
   qason install     install the 3 QA agents, skills, and orchestrator
   qason uninstall   remove everything qason installed
   qason version     print the version
