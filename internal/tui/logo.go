@@ -6,15 +6,6 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-// croissantArt is the QASON mascot: a medialuna resting over the
-// wordmark. Plain ASCII (no box-drawing) so it survives any terminal
-// font.
-const croissantArt = `  ,.                      ,.
-  \ '-.__            __.-' /
-   \     ''--------''     /
-    '-.__            __.-'
-         ''--------''`
-
 // logoArt is the QASON wordmark, same block-character family as the
 // QATES logo — students who later meet the full product should feel
 // at home.
@@ -33,35 +24,24 @@ const logoTagline = "QASON · Educational QA agents for Claude Code"
 var logoGradient = []lipgloss.Color{"214", "208", "208", "202", "202", "166"}
 
 var (
-	croissantStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("178"))
-	brandStyle     = lipgloss.NewStyle().Foreground(lipgloss.Color("208")).Bold(true)
-	taglineStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("245")).Italic(true)
+	brandStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("208")).Bold(true)
+	taglineStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("245")).Italic(true)
 )
 
 // logoMinWidth is the narrowest terminal that renders the wordmark
 // without wrapping.
 var logoMinWidth = lipgloss.Width(logoArt) + 4
 
-// renderLogo draws the croissant, the orange QASON wordmark, and the
-// tagline. Narrow terminals (or unknown width, before the first
-// WindowSizeMsg) fall back to a one-line brand so nothing wraps.
+// renderLogo draws the orange QASON wordmark and the tagline. Narrow
+// terminals (or unknown width, before the first WindowSizeMsg) fall
+// back to a one-line brand so nothing wraps.
 func renderLogo(width int) string {
 	if width > 0 && width < logoMinWidth {
-		return brandStyle.Render("QASON 🥐") + taglineStyle.Render(" · "+logoTagline)
+		return brandStyle.Render("QASON") + taglineStyle.Render(" · "+logoTagline)
 	}
 
 	var b strings.Builder
 	logoWidth := lipgloss.Width(logoArt)
-
-	// Pad the croissant as a BLOCK (uniform indent from its widest
-	// line), never line-by-line — per-line centering would shift the
-	// lines relative to each other and distort the art.
-	croissantPad := strings.Repeat(" ", centerPad(logoWidth, lipgloss.Width(croissantArt)))
-	for _, line := range strings.Split(croissantArt, "\n") {
-		b.WriteString(croissantPad)
-		b.WriteString(croissantStyle.Render(line))
-		b.WriteString("\n")
-	}
 	for i, line := range strings.Split(logoArt, "\n") {
 		color := logoGradient[i%len(logoGradient)]
 		b.WriteString(lipgloss.NewStyle().Foreground(color).Render(line))
