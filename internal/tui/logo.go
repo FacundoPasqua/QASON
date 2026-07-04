@@ -32,9 +32,15 @@ var (
 // without wrapping.
 var logoMinWidth = lipgloss.Width(logoArt) + 4
 
-// renderLogo draws the orange QASON wordmark and the tagline. Narrow
-// terminals (or unknown width, before the first WindowSizeMsg) fall
-// back to a one-line brand so nothing wraps.
+// lockupMinWidth is the narrowest terminal that fits the spiral mark
+// beside the wordmark — the full brand lockup, mirroring the original
+// logo's mark-left / text-right layout.
+var lockupMinWidth = logoMinWidth + lipgloss.Width(logoMark) + 2
+
+// renderLogo draws the brand header. Wide terminals (or unknown width,
+// before the first WindowSizeMsg) get the full lockup: spiral mark on
+// the left, orange wordmark and tagline on the right. Mid widths drop
+// the mark; narrow ones fall back to a one-line brand so nothing wraps.
 func renderLogo(width int) string {
 	if width > 0 && width < logoMinWidth {
 		return brandStyle.Render("QASON") + taglineStyle.Render(" · "+logoTagline)
@@ -49,7 +55,12 @@ func renderLogo(width int) string {
 	}
 	b.WriteString(strings.Repeat(" ", centerPad(logoWidth, lipgloss.Width(logoTagline))))
 	b.WriteString(taglineStyle.Render(logoTagline))
-	return b.String()
+	text := b.String()
+
+	if width > 0 && width < lockupMinWidth {
+		return text
+	}
+	return lipgloss.JoinHorizontal(lipgloss.Center, logoMark, "  ", text)
 }
 
 func centerPad(total, inner int) int {
