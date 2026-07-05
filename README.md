@@ -85,6 +85,12 @@ hooks, métricas de adopción y regresión de prompts). Lo que aprendés acá
 transfiere 1:1. Los prompts se sincronizan desde QATES — los issues de
 contenido van allá.
 
+## Para alumnos
+
+La guía completa — alcances, límites, los tres agentes en detalle y
+cinco ejercicios prácticos — está en
+[docs/GUIA-ALUMNOS.md](docs/GUIA-ALUMNOS.md). Empezá por ahí.
+
 ## Licencia
 
 MIT — usalo, modificalo y enseñá con él.
