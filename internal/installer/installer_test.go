@@ -15,24 +15,28 @@ func TestInstall_WritesAgentFiles(t *testing.T) {
 		fileName   string
 		agentID    string
 		bodyMarker string
+		color      string
 	}{
 		{
 			name:       "qa-analyst",
 			fileName:   "qa-analyst.md",
 			agentID:    "qa-analyst",
 			bodyMarker: "QA Analyst",
+			color:      "cyan",
 		},
 		{
 			name:       "qa-test-designer",
 			fileName:   "qa-test-designer.md",
 			agentID:    "qa-test-designer",
 			bodyMarker: "QA Test Designer",
+			color:      "green",
 		},
 		{
 			name:       "qa-automator",
 			fileName:   "qa-automator.md",
 			agentID:    "qa-automator",
 			bodyMarker: "QA Automator",
+			color:      "purple",
 		},
 	}
 
@@ -60,6 +64,9 @@ func TestInstall_WritesAgentFiles(t *testing.T) {
 			}
 			if !strings.Contains(content, "name: "+tc.agentID) {
 				t.Errorf("agent file %s should contain 'name: %s', content:\n%s", path, tc.agentID, content)
+			}
+			if !strings.Contains(content, "color: "+tc.color) {
+				t.Errorf("agent file %s should contain %q — the colors are what make the pipeline legible in the task list", path, "color: "+tc.color)
 			}
 			if !strings.Contains(content, "model: sonnet") {
 				t.Errorf("agent file %s should contain 'model: sonnet', content:\n%s", path, content)

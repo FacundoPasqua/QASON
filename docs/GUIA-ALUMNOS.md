@@ -122,7 +122,20 @@ Pedile a Claude Code:
 
 > Analizá este ticket y creá los tests: [ticket]
 
-Y mirá la secuencia: el orquestador delega al analyst → el análisis
+Y mirá la secuencia — **literalmente miralla**: cada agente tiene su
+color en la task list de Claude Code, así que el pipeline se lee de un
+vistazo.
+
+| | Agente | Qué está haciendo cuando lo ves |
+|---|---|---|
+| 🔵 cyan | `qa-analyst` | Está pensando: requisitos, riesgos, preguntas |
+| 🟢 green | `qa-test-designer` | Está diseñando: casos, datos, prioridades |
+| 🟣 purple | `qa-automator` | Está ejecutando: código y tests corriendo |
+
+Si ves violeta antes que cyan, algo se salteó el pipeline — y esa es
+una observación que vale oro cuando debuguees tus propios agentes.
+
+El orquestador delega al analyst → el análisis
 alimenta al designer → los casos alimentan al automator → síntesis
 final con los resultados de los tres. Cada agente recibe el output del
 anterior como contexto. Eso es **orquestación agéntica**, y acabás de
