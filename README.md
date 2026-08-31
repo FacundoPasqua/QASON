@@ -44,6 +44,27 @@ Eso instala en tu `~/.claude`:
 Para desinstalar: `go run ./cmd/qason uninstall` (tu contenido propio de
 `CLAUDE.md` queda intacto).
 
+### ¿Usás GitHub Copilot en vez de Claude Code?
+
+También funciona. VS Code ya busca sub-agentes en `~/.claude/agents` (lee el
+formato de Claude) y skills en `~/.claude/skills`, así que el install de arriba
+te deja los tres agentes y las 31 skills listos sin hacer nada más.
+
+Lo único que Copilot **no** lee es `CLAUDE.md`, que es justo donde vive el
+orquestador. Sin él tenés los especialistas pero nadie los encadena — y el
+pipeline es la clase entera. Pasale la raíz de tu proyecto:
+
+```bash
+go run ./cmd/qason install --copilot .
+```
+
+Eso escribe el orquestador en `.github/copilot-instructions.md`, respetando las
+reglas que el archivo ya tuviera. `uninstall` lo saca y deja las tuyas intactas.
+
+Dos diferencias honestas: el campo `color` de los agentes no está entre los que
+Copilot soporta (los colores del pipeline probablemente no se vean), y `model:
+sonnet` usa nombres de modelo de Claude Code. Probalo antes de depender de ello.
+
 ## Primer ejercicio
 
 Abrí Claude Code en cualquier proyecto y pegá un ticket — por ejemplo:

@@ -27,11 +27,14 @@ func main() {
 	cmd := os.Args[1]
 	flags := flag.NewFlagSet(cmd, flag.ExitOnError)
 	claudeDir := flags.String("claude-dir", installer.DefaultClaudeDir(), "Claude Code config directory")
+	copilotDir := flags.String("copilot", "", "project root that also gets .github/copilot-instructions.md")
 	_ = flags.Parse(os.Args[2:])
+
+	opts := installer.Options{ClaudeDir: *claudeDir, CopilotDir: *copilotDir}
 
 	switch cmd {
 	case "install":
-		res, err := installer.Install(installer.Options{ClaudeDir: *claudeDir})
+		res, err := installer.Install(opts)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "qason: %v\n", err)
 			os.Exit(1)
@@ -40,10 +43,16 @@ func main() {
 		fmt.Printf("  ✓ %d QA agents (qa-analyst, qa-test-designer, qa-automator)\n", len(res.Agents))
 		fmt.Printf("  ✓ %d skills\n", res.Skills)
 		fmt.Println("  ✓ orchestrator registered in CLAUDE.md")
+		if res.Copilot != "" {
+			fmt.Printf("  ✓ orchestrator registered in %s\n", res.Copilot)
+		}
 		fmt.Println()
 		fmt.Println("Open Claude Code and try: \"Analyze this ticket and create tests for it\"")
+		if res.Copilot != "" {
+			fmt.Println("Copilot reads the agents and skills from ~/.claude on its own.")
+		}
 	case "uninstall":
-		if err := installer.Uninstall(installer.Options{ClaudeDir: *claudeDir}); err != nil {
+		if err := installer.Uninstall(opts); err != nil {
 			fmt.Fprintf(os.Stderr, "qason: %v\n", err)
 			os.Exit(1)
 		}
@@ -66,5 +75,8 @@ Usage:
   qason version     print the version
 
 Flags:
-  --claude-dir      Claude Code config directory (default: ~/.claude)`)
+  --claude-dir      Claude Code config directory (default: ~/.claude)
+  --copilot DIR     also register the orchestrator for GitHub Copilot, in
+                    DIR/.github/copilot-instructions.md (VS Code already
+                    reads the agents and skills from ~/.claude)`)
 }
