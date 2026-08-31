@@ -113,10 +113,9 @@ Pass: <N> | Fail: <N> | Tool-missing: <N>
 
 ## Why not just "trust the LLM"
 
-The PDF is explicit: hallucinations in test generation are a **medium-
-probability, medium-impact risk**. A 2-minute verification step catches
-~80% of those failures cheaply — without this, the 401 lines of Playwright
-we generated for EAAAAC-206 could have contained bad imports and no one
-would have noticed until a human ran them.
+Hallucinations in test generation are a **medium-probability,
+medium-impact risk**. A 2-minute verification step catches most of those
+failures cheaply — without it, a 400-line Playwright suite can ship with
+bad imports and nobody notices until a human runs it.
 
 The rule is simple: **we don't ship tests we haven't verified.**

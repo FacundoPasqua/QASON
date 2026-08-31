@@ -10,7 +10,7 @@ license: MIT
 metadata:
   author: QASON
   version: "0.1.0"
-  agent: qa-analyst, qa-automator, qa-test-designer, qa-reviewer, qa-ops
+  agent: qa-analyst, qa-automator, qa-test-designer
   phase: memory-infrastructure
   requires_mcp: none
 ---
