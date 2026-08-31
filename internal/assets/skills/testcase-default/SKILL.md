@@ -1,9 +1,9 @@
 ---
 name: testcase-format-default
 description: >
-  Default, platform-agnostic test case format for QASON. Used by jira-testcase-linker,
-  ado-testcase-linker, and any sub-agent that produces a TC without a project-specific
-  template. Optimized for Jira (classic) and ADO Test Plans without plugins.
+  Default, platform-agnostic test case format for QASON. Used by any sub-agent
+  that produces a test case without a project-specific template. Optimized for
+  Jira (classic) and ADO Test Plans without plugins.
 license: MIT
 metadata:
   author: QASON

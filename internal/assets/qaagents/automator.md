@@ -126,7 +126,7 @@ After generating test files, you MUST run them to validate:
    That phrasing produced two failure modes in practice: (a) the agent looped
    indefinitely on hard problems, burning context until the rate limit hit;
    (b) the agent rationalized excuses to stop instead of escalating to the
-   human. Replaced 2026-04-27 with a mechanical loop:
+   human. Replaced with a mechanical loop:
 
    - **Attempt 1**: Read the error output. Identify root cause. Fix the test
      code (not the application code). Re-run.
@@ -170,7 +170,7 @@ After generating test files, you MUST run them to validate:
      isn't. Hand off after attempt 0 with an environment diagnostic.
    - The failure indicates a real bug in the application under test (not
      in the test). The test caught a defect — that is success, not failure.
-     Hand off to qa-ops for triage.
+     Report it as a defect found; do not patch the application to make the test pass.
 
 4. **Report results** in your output:
    - Total: X passed, Y failed, Z skipped

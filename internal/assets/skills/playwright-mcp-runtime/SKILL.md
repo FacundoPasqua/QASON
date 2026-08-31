@@ -11,7 +11,7 @@ license: MIT
 metadata:
   author: QASON
   version: "0.1.0"
-  agent: qa-automator,qa-ops,qa-reviewer
+  agent: qa-automator
   phase: frameworks
 ---
 
@@ -45,7 +45,7 @@ Prerequisite: Playwright MCP is installed. QASON auto-installs it in the `accele
 | `browser_select_option(ref, values)` | Pick from native selects |
 | `browser_wait_for(text or selector)` | Block until async UI settles before snapshotting |
 | `browser_take_screenshot()` | Attach a visual to bug reports or PR review comments |
-| `browser_console_messages()` | Capture errors the UI logged during the flow — hand these to qa-ops for bug triage |
+| `browser_console_messages()` | Capture errors the UI logged during the flow — report them alongside the test results |
 | `browser_network_requests()` | See XHR/fetch traffic; useful for verifying API mocking and for contract tests |
 | `browser_close()` | Release resources at end of session |
 
@@ -80,7 +80,7 @@ Tool names follow `@playwright/mcp` v1.x. If the project pins an older version, 
    - **Environment**: the test ran against a different build. Confirm base URL and auth state.
    - **Flaky assertion**: the assertion depends on order-of-appearance. Use a more specific selector with `.first()` / `.nth()` justified by the snapshot.
 
-## Workflow: PR review (qa-reviewer)
+## Workflow: reviewing existing Playwright tests
 
 When a PR adds or modifies Playwright tests:
 1. Check out the PR branch; deploy or point to the preview URL.
@@ -103,4 +103,4 @@ When you finish a design session, the output should contain:
 - The **spec file** that uses the POM
 - The **command used to run the new test**, with the outcome (pass/fail + flakiness notes)
 
-That handoff is what qa-reviewer and qa-ops will read later. Without it, the MCP session's value evaporates when the session closes.
+That handoff is what the next reader — human or agent — will rely on. Without it, the MCP session's value evaporates when the session closes.

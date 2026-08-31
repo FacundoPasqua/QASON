@@ -21,7 +21,7 @@ QA** sin ruido.
 ## Requisitos
 
 - [Claude Code](https://claude.com/claude-code) instalado y autenticado
-- Go 1.22+ (solo para compilar el instalador)
+- Go 1.26+ (solo para compilar el instalador) — **instalalo antes de la clase**
 
 ## Instalación
 
@@ -38,7 +38,7 @@ Eso instala en tu `~/.claude`:
 | Qué | Dónde |
 |---|---|
 | 3 sub-agentes QA | `agents/qa-{analyst,test-designer,automator}.md` |
-| 35 skills | `skills/qason/<skill>/SKILL.md` |
+| 31 skills | `skills/qason/<skill>/SKILL.md` |
 | Orquestador | bloque manejado dentro de `CLAUDE.md` |
 
 Para desinstalar: `go run ./cmd/qason uninstall` (tu contenido propio de

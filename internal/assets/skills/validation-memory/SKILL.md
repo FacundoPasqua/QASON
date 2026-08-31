@@ -55,7 +55,7 @@ Pattern matches the other memory skills (see `bug-pattern-memory`,
    - `mem_search(query: "qason/project/{name}/validation-failures {file-pattern}", project: "{name}")`
 2. **Inject findings** into the working prompt:
    > Known validation pitfalls in this project:
-   > - `@playwright/test` must come from `@playwright/test` not `playwright/test` (saved 2026-04-14 after 3 recurrences)
+   > - `@playwright/test` must come from `@playwright/test` not `playwright/test` (saved after 3 recurrences)
    > - `test.describe.configure({ mode: 'parallel' })` requires top-level placement
 3. **Generate** avoiding the listed pitfalls.
 

@@ -44,11 +44,17 @@ que en un equipo humano.
   Acá está el motor; el chasis de producción lo ves en QATES.
 - **No corre solo.** Cada acción pasa por el sistema de permisos de
   Claude Code: el agente propone, vos aprobás.
+- **No escribe en Jira, ADO ni Confluence.** QASON puede LEER un ticket
+  que le pegues, pero no comenta, no transiciona y no publica páginas.
+  Es a propósito: aprendés en un entorno donde no podés romper el
+  tracker de tu empresa sin querer. Esas capacidades viven en QATES.
 
 ## 2. Requisitos
 
 1. **Claude Code** instalado y autenticado ([claude.com/claude-code](https://claude.com/claude-code)).
-2. **Go 1.22+** para compilar el instalador ([go.dev/dl](https://go.dev/dl)).
+2. **Go 1.26+** para compilar el instalador ([go.dev/dl](https://go.dev/dl)).
+   Instalalo **antes** de la clase: con una versión más vieja Go descarga el
+   toolchain correcto solo, pero son ~80 MB y el wifi del aula no perdona.
 3. Un proyecto donde practicar (cualquier repo con código sirve; los
    ejercicios incluyen tickets de ejemplo).
 
@@ -74,7 +80,7 @@ propio de `CLAUDE.md` queda intacto).
 | Qué | Dónde | Para qué |
 |---|---|---|
 | 3 sub-agentes | `~/.claude/agents/qa-*.md` | Los especialistas que Claude Code puede invocar |
-| 35 skills | `~/.claude/skills/qason/` | Capacidades atómicas que los agentes cargan según la tarea |
+| 31 skills | `~/.claude/skills/qason/` | Capacidades atómicas que los agentes cargan según la tarea |
 | Orquestador | bloque en `~/.claude/CLAUDE.md` | Las reglas de ruteo y síntesis |
 
 Todo es **markdown legible**. Abrí los archivos. En serio: el prompt ES

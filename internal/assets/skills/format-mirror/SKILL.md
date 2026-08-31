@@ -10,7 +10,7 @@ license: MIT
 metadata:
   author: QASON
   version: "0.1.0"
-  agent: qa-automator,qa-ops,qa-test-designer
+  agent: qa-automator,qa-test-designer
   phase: formats
 ---
 
