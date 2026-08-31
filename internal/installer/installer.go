@@ -53,16 +53,26 @@ type Result struct {
 	Skills int      // number of skills installed
 }
 
-// agentSpecs binds each sub-agent to its embedded prompt and the
-// one-line description Claude Code shows in the Agent tool.
+// agentSpecs binds each sub-agent to its embedded prompt, the one-line
+// description Claude Code shows in the Agent tool, and its display color.
+//
+// The colors are teaching aids, not decoration: when the Spec-to-Test
+// pipeline runs, the task list shows three distinctly colored agents
+// handing work to each other, which makes specialization visible at a
+// glance. Red is deliberately unused — it reads as failure in a QA
+// context, and no agent should look broken just by running.
+//
+// Claude Code accepts eight named colors: red, blue, green, yellow,
+// purple, orange, pink, cyan.
 var agentSpecs = []struct {
 	ID          string
 	Asset       string
 	Description string
+	Color       string
 }{
-	{"qa-analyst", "analyst.md", "Analyzes requirements, generates test plans and risk matrices"},
-	{"qa-test-designer", "designer.md", "Designs test cases: functional, edge, negative, exploratory, contract, data-driven"},
-	{"qa-automator", "automator.md", "Generates automation scripts: unit, integration, e2e, performance, security, a11y"},
+	{"qa-analyst", "analyst.md", "Analyzes requirements, generates test plans and risk matrices", "cyan"},
+	{"qa-test-designer", "designer.md", "Designs test cases: functional, edge, negative, exploratory, contract, data-driven", "green"},
+	{"qa-automator", "automator.md", "Generates automation scripts: unit, integration, e2e, performance, security, a11y", "purple"},
 }
 
 // Install writes the QASON agents, skills, and orchestrator block into
@@ -85,7 +95,7 @@ func Install(opts Options) (Result, error) {
 			return res, fmt.Errorf("embedded prompt %s: %w", a.Asset, err)
 		}
 		path := filepath.Join(agentsDir, a.ID+".md")
-		if err := os.WriteFile(path, renderAgentFile(a.ID, a.Description, body), 0o644); err != nil {
+		if err := os.WriteFile(path, renderAgentFile(a.ID, a.Description, a.Color, body), 0o644); err != nil {
 			return res, fmt.Errorf("write %s: %w", path, err)
 		}
 		res.Agents = append(res.Agents, path)
@@ -125,13 +135,15 @@ func Uninstall(opts Options) error {
 }
 
 // renderAgentFile assembles the Claude Code sub-agent file: YAML
-// frontmatter (name, description, model) followed by the prompt body.
-func renderAgentFile(id, description string, body []byte) []byte {
+// frontmatter (name, description, model, color) followed by the prompt
+// body.
+func renderAgentFile(id, description, color string, body []byte) []byte {
 	var b strings.Builder
 	b.WriteString("---\n")
 	fmt.Fprintf(&b, "name: %s\n", id)
 	fmt.Fprintf(&b, "description: %s\n", description)
 	b.WriteString("model: sonnet\n")
+	fmt.Fprintf(&b, "color: %s\n", color)
 	b.WriteString("---\n\n")
 	b.Write(body)
 	return []byte(b.String())

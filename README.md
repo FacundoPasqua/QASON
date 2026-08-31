@@ -62,11 +62,15 @@ escribe y CORRE los tests. Tres agentes, un pipeline, cero magia.
 
 ## Los tres agentes
 
-| Agente | Rol | Skills clave |
-|---|---|---|
-| `qa-analyst` | Análisis de requisitos, test plans, matrices de riesgo | prd-analyzer, test-plan-gen, risk-matrix-gen |
-| `qa-test-designer` | Diseño de casos: funcionales, edge, negativos, exploratorios | e2e-test-gen, api-test-gen, exploratory-guide, test-data-gen |
-| `qa-automator` | Código de automatización: unit, integration, e2e, performance, a11y | unit-test-gen, playwright-scaffold, output-validator |
+| Agente | Color | Rol | Skills clave |
+|---|---|---|---|
+| `qa-analyst` | 🔵 cyan | Análisis de requisitos, test plans, matrices de riesgo | prd-analyzer, test-plan-gen, risk-matrix-gen |
+| `qa-test-designer` | 🟢 green | Diseño de casos: funcionales, edge, negativos, exploratorios | e2e-test-gen, api-test-gen, exploratory-guide, test-data-gen |
+| `qa-automator` | 🟣 purple | Código de automatización: unit, integration, e2e, performance, a11y | unit-test-gen, playwright-scaffold, output-validator |
+
+Los colores no son decoración: cuando corre el pipeline, la task list de
+Claude Code muestra tres agentes de colores distintos pasándose el trabajo.
+La especialización se ve, no hay que explicarla.
 
 ## Cómo funciona por dentro
 
