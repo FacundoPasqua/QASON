@@ -1,10 +1,9 @@
 # QASON — QA Agentic Testing, edición educativa
 
 QASON convierte tu Claude Code en un equipo de QA con **tres agentes
-especializados** que trabajan en cadena. Es la edición educativa de
-[QATES](https://github.com/FacundoPasqua/Qates): mismos prompts, mismos
-skills, recortado a lo esencial para aprender **IA agéntica aplicada a
-QA** sin ruido.
+especializados** que trabajan en cadena. Prompts y skills de calidad de
+producción, recortados a lo esencial para aprender **IA agéntica aplicada
+a QA** sin ruido.
 
 ## Qué vas a aprender usándolo
 
@@ -101,14 +100,6 @@ completo son ~200 líneas de Go legibles ([installer.go](internal/installer/inst
 — leelo, es parte del material: vas a ver frontmatter YAML, un swap
 atómico de directorios y un bloque manejado con marcadores. El binario
 no hace ninguna llamada de red.
-
-## Relación con QATES
-
-QASON es un subconjunto de [QATES](https://github.com/FacundoPasqua/Qates),
-el ecosistema completo (5 agentes, 51 skills, workflows, enforcement por
-hooks, métricas de adopción y regresión de prompts). Lo que aprendés acá
-transfiere 1:1. Los prompts se sincronizan desde QATES — los issues de
-contenido van allá.
 
 ## Para alumnos
 
