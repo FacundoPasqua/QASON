@@ -215,6 +215,91 @@ func TestUninstall_NoopWhenNotInstalled(t *testing.T) {
 	}
 }
 
+// TestInstall_CopilotOptIn verifies the Copilot instructions file is written
+// only when CopilotDir is set. VS Code finds the agents and skills in
+// ~/.claude by itself; this file is the one piece it cannot discover, so
+// writing it unasked would edit a project the user never pointed us at.
+func TestInstall_CopilotOptIn(t *testing.T) {
+	claudeDir := t.TempDir()
+
+	res, err := Install(Options{ClaudeDir: claudeDir})
+	if err != nil {
+		t.Fatalf("Install() without CopilotDir returned error: %v", err)
+	}
+	if res.Copilot != "" {
+		t.Errorf("Result.Copilot should be empty when CopilotDir is unset, got %q", res.Copilot)
+	}
+
+	projectDir := t.TempDir()
+	res, err = Install(Options{ClaudeDir: claudeDir, CopilotDir: projectDir})
+	if err != nil {
+		t.Fatalf("Install() with CopilotDir returned error: %v", err)
+	}
+	want := filepath.Join(projectDir, ".github", "copilot-instructions.md")
+	if res.Copilot != want {
+		t.Errorf("Result.Copilot = %q, want %q", res.Copilot, want)
+	}
+	data, err := os.ReadFile(want)
+	if err != nil {
+		t.Fatalf("expected Copilot instructions at %s, got error: %v", want, err)
+	}
+	if !strings.Contains(string(data), "QASON QA Orchestrator") {
+		t.Errorf("Copilot instructions should contain the orchestrator, got:\n%s", data)
+	}
+}
+
+// TestInstall_CopilotIdempotentAndReversible verifies the Copilot file gets
+// the same managed-block contract as CLAUDE.md: user content survives, the
+// block never duplicates, and Uninstall strips the block but leaves the
+// user's own instructions behind.
+func TestInstall_CopilotIdempotentAndReversible(t *testing.T) {
+	claudeDir := t.TempDir()
+	projectDir := t.TempDir()
+	path := filepath.Join(projectDir, ".github", "copilot-instructions.md")
+
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		t.Fatalf("failed to create .github dir: %v", err)
+	}
+	if err := os.WriteFile(path, []byte("# Team Copilot rules\n"), 0o644); err != nil {
+		t.Fatalf("failed to pre-create Copilot instructions: %v", err)
+	}
+
+	opts := Options{ClaudeDir: claudeDir, CopilotDir: projectDir}
+	for i := 0; i < 2; i++ {
+		if _, err := Install(opts); err != nil {
+			t.Fatalf("Install() #%d returned error: %v", i+1, err)
+		}
+	}
+
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("failed to read Copilot instructions: %v", err)
+	}
+	content := string(data)
+
+	if !strings.Contains(content, "# Team Copilot rules") {
+		t.Errorf("Copilot instructions should preserve user content, got:\n%s", content)
+	}
+	if n := strings.Count(content, "<!-- QASON:BEGIN -->"); n != 1 {
+		t.Errorf("Copilot instructions should contain exactly one begin marker, found %d", n)
+	}
+
+	if err := Uninstall(opts); err != nil {
+		t.Fatalf("Uninstall() returned error: %v", err)
+	}
+	data, err = os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("Uninstall() should leave the Copilot file in place, got error: %v", err)
+	}
+	content = string(data)
+	if strings.Contains(content, "<!-- QASON:BEGIN -->") {
+		t.Errorf("Uninstall() should strip the QASON block, got:\n%s", content)
+	}
+	if !strings.Contains(content, "# Team Copilot rules") {
+		t.Errorf("Uninstall() must not destroy the user's own Copilot rules, got:\n%s", content)
+	}
+}
+
 func min(a, b int) int {
 	if a < b {
 		return a

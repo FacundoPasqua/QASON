@@ -75,6 +75,27 @@ escribí "¿qué agentes QA tenés disponibles?" — debería nombrar
 **Para desinstalar**: `go run ./cmd/qason uninstall` (tu contenido
 propio de `CLAUDE.md` queda intacto).
 
+### Si usás GitHub Copilot
+
+VS Code lee sub-agentes de `~/.claude/agents` y skills de
+`~/.claude/skills`, así que el install de arriba ya te dejó todo. Lo
+único que Copilot no lee es `CLAUDE.md` — donde vive el orquestador.
+Corré esto en la raíz de tu proyecto:
+
+```bash
+go run ./cmd/qason install --copilot .
+```
+
+Y pensá por qué hizo falta, porque es la lección escondida acá: **un
+agente no es un modelo, es un modelo MÁS su configuración**. Cambiás la
+herramienta y los prompts viajan igual; lo que no viaja es dónde cada
+herramienta va a buscarlos. Por eso importa entender la arquitectura y
+no solo copiar comandos.
+
+Dos diferencias: los colores de los agentes probablemente no se vean
+(Copilot no soporta ese campo) y `model: sonnet` es nomenclatura de
+Claude Code. Probalo antes de la clase.
+
 ### Qué instaló, exactamente
 
 | Qué | Dónde | Para qué |

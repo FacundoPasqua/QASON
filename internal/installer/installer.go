@@ -34,6 +34,10 @@ const (
 // Options configures where QASON installs.
 type Options struct {
 	ClaudeDir string // Claude Code config dir, e.g. ~/.claude
+	// CopilotDir, when set, is a project root that also gets the
+	// orchestrator written to .github/copilot-instructions.md. See
+	// ensureCopilotBlock for why only that one file is needed.
+	CopilotDir string
 }
 
 // DefaultClaudeDir returns ~/.claude, the standard Claude Code config
@@ -49,8 +53,9 @@ func DefaultClaudeDir() string {
 
 // Result reports what Install wrote.
 type Result struct {
-	Agents []string // absolute paths of the agent files written
-	Skills int      // number of skills installed
+	Agents  []string // absolute paths of the agent files written
+	Skills  int      // number of skills installed
+	Copilot string   // path of the Copilot instructions file, empty if not requested
 }
 
 // agentSpecs binds each sub-agent to its embedded prompt, the one-line
@@ -110,28 +115,31 @@ func Install(opts Options) (Result, error) {
 	if err := ensureOrchestratorBlock(opts.ClaudeDir); err != nil {
 		return res, err
 	}
+
+	if opts.CopilotDir != "" {
+		path, err := ensureCopilotBlock(opts.CopilotDir)
+		if err != nil {
+			return res, err
+		}
+		res.Copilot = path
+	}
 	return res, nil
 }
 
 // Uninstall removes everything Install wrote, preserving any user
-// content in CLAUDE.md outside the QASON markers. Running it on a
-// machine where QASON was never installed is a no-op.
+// content in CLAUDE.md (and in the Copilot instructions file) outside
+// the QASON markers. Running it on a machine where QASON was never
+// installed is a no-op.
 func Uninstall(opts Options) error {
 	for _, a := range agentSpecs {
 		_ = os.Remove(filepath.Join(opts.ClaudeDir, "agents", a.ID+".md"))
 	}
 	_ = os.RemoveAll(filepath.Join(opts.ClaudeDir, "skills", "qason"))
 
-	path := filepath.Join(opts.ClaudeDir, "CLAUDE.md")
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil // nothing to strip
+	if opts.CopilotDir != "" {
+		_ = stripManagedBlock(copilotPath(opts.CopilotDir))
 	}
-	stripped := stripBlock(string(data))
-	if stripped != "" {
-		stripped += "\n"
-	}
-	return os.WriteFile(path, []byte(stripped), 0o644)
+	return stripManagedBlock(filepath.Join(opts.ClaudeDir, "CLAUDE.md"))
 }
 
 // renderAgentFile assembles the Claude Code sub-agent file: YAML
@@ -200,12 +208,43 @@ func installSkills(claudeDir string) (int, error) {
 // previous QASON block stripped) + one fresh QASON block. Idempotent by
 // construction — strip-then-append can never duplicate.
 func ensureOrchestratorBlock(claudeDir string) error {
+	return writeManagedBlock(filepath.Join(claudeDir, "CLAUDE.md"))
+}
+
+// copilotPath returns the instructions file GitHub Copilot reads for a
+// project: <root>/.github/copilot-instructions.md.
+func copilotPath(projectDir string) string {
+	return filepath.Join(projectDir, ".github", "copilot-instructions.md")
+}
+
+// ensureCopilotBlock writes the same orchestrator into the file Copilot
+// reads, and returns its path.
+//
+// Only this one file is needed. VS Code already discovers the agents and
+// skills QASON installs: it scans ~/.claude/agents for Claude-format
+// sub-agents and ~/.claude/skills for SKILL.md files. What it does NOT
+// read is CLAUDE.md, so without this the three specialists are present
+// but nothing routes work between them — the pipeline, which is the
+// whole lesson, never starts.
+func ensureCopilotBlock(projectDir string) (string, error) {
+	path := copilotPath(projectDir)
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		return "", fmt.Errorf("create .github dir: %w", err)
+	}
+	if err := writeManagedBlock(path); err != nil {
+		return "", err
+	}
+	return path, nil
+}
+
+// writeManagedBlock rewrites path as: existing content with any previous
+// QASON block stripped, then one fresh block. The file need not exist.
+func writeManagedBlock(path string) error {
 	orch, err := assets.QAAgentPrompts.ReadFile("qaagents/orchestrator.md")
 	if err != nil {
 		return fmt.Errorf("embedded orchestrator: %w", err)
 	}
 
-	path := filepath.Join(claudeDir, "CLAUDE.md")
 	existing, _ := os.ReadFile(path) // missing file reads as empty
 
 	content := stripBlock(string(existing))
@@ -214,6 +253,20 @@ func ensureOrchestratorBlock(claudeDir string) error {
 	}
 	content += beginMarker + "\n" + strings.TrimSpace(string(orch)) + "\n" + endMarker + "\n"
 	return os.WriteFile(path, []byte(content), 0o644)
+}
+
+// stripManagedBlock removes the QASON block from path, leaving the
+// user's own content. A missing file is not an error: nothing to strip.
+func stripManagedBlock(path string) error {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil
+	}
+	stripped := stripBlock(string(data))
+	if stripped != "" {
+		stripped += "\n"
+	}
+	return os.WriteFile(path, []byte(stripped), 0o644)
 }
 
 // stripBlock removes the QASON-owned block (markers included) and
